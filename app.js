@@ -6,6 +6,8 @@ import {
   addAccount,
   depositing,
   updateCredit,
+  cashWithdrawal,
+  transferring,
 } from "./users.js";
 
 const app = express();
@@ -24,7 +26,7 @@ app.get("/users/:id", (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  let { userId, cash, credit } = req.body;
+  let { userId, cash, credit } = req.query;
   if (cash === undefined) cash = 0;
   if (credit === undefined) credit = 0;
   const add = addUser({ userId, cash, credit });
@@ -45,11 +47,12 @@ app.put("/users/add-account/:id", (req, res) => {
   }
 });
 
-app.put("/users/cash/:id", (req, res) => {
-  const id = req.params.id;
-  const { numberToAdd, accountNunmer } = req.body;
+app.put("/users/cash/:id/:accountNunmer", (req, res) => {
+  const { id, accountNunmer } = req.params;
+  let { numberToAdd } = req.query;
+  if (numberToAdd === null) numberToAdd = 0;
 
-  const deposit = depositing(id, numberToAdd, accountNunmer);
+  const deposit = depositing(id, +numberToAdd, accountNunmer);
   if (deposit === "deposited") {
     res.send(getUsers());
   } else {
@@ -57,17 +60,49 @@ app.put("/users/cash/:id", (req, res) => {
   }
 });
 
-app.put("/users/credit/:id", (req, res) => {
-  const id = req.params.id;
-  const { numberToAdd, accountNunmer } = req.body;
+app.put("/users/credit/:id/:accountNunmer", (req, res) => {
+  const { id, accountNunmer } = req.params;
+  const { numberToAdd } = req.query;
+  if (numberToAdd === null) numberToAdd = 0;
 
-  const update = updateCredit(id, numberToAdd, accountNunmer);
+  const update = updateCredit(id, +numberToAdd, accountNunmer);
   if (update === "updated") {
     res.send(getUsers());
   } else {
     res.send(update);
   }
 });
+
+app.put("/users/withdrawal/:id/:accountNunmer", (req, res) => {
+  const { id, accountNunmer } = req.params;
+  const { cashToGet } = req.query;
+  const withdrawal = cashWithdrawal(id, +cashToGet, accountNunmer);
+  if (withdrawal === "withdrawaled") {
+    res.send(getUsers());
+  } else {
+    res.send(withdrawal);
+  }
+});
+
+app.put(
+  "/users/transference/:idSend/:accountNunmerSend/:idGet/:accountNunmerGet",
+  (req, res) => {
+    const { idSend, accountNunmerSend, idGet, accountNunmerGet } = req.params;
+    const { cashTotransfer } = req.query;
+    const transfer = transferring(
+      idSend,
+      accountNunmerSend,
+      idGet,
+      accountNunmerGet,
+      +cashTotransfer
+    );
+    if (transfer === "transfered") {
+      res.send(getUsers());
+    } else {
+      res.send(transfer);
+    }
+  }
+);
 
 app.listen(5000, () => {
   console.log(`listen to pore ${PORT}`);
