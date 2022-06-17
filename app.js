@@ -1,5 +1,12 @@
 import express from "express";
-import { getUser, getUsers, addUser, addAccount, depositing } from "./users.js";
+import {
+  getUser,
+  getUsers,
+  addUser,
+  addAccount,
+  depositing,
+  updateCredit,
+} from "./users.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +54,18 @@ app.put("/users/cash/:id", (req, res) => {
     res.send(getUsers());
   } else {
     res.send(deposit);
+  }
+});
+
+app.put("/users/credit/:id", (req, res) => {
+  const id = req.params.id;
+  const { numberToAdd, accountNunmer } = req.body;
+
+  const update = updateCredit(id, numberToAdd, accountNunmer);
+  if (update === "updated") {
+    res.send(getUsers());
+  } else {
+    res.send(update);
   }
 });
 

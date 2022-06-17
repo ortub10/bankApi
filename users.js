@@ -84,3 +84,29 @@ export const depositing = (id, number, accountNunmer) => {
 
   return "user id not exist";
 };
+
+export const updateCredit = (id, number, accountNunmer) => {
+  if (number < 0) return "your uddted is negative number";
+
+  const users = getUsers();
+  const user = findUser(id);
+  const userIndex = users.findIndex((user) => user.userId == id);
+
+  if (user !== undefined) {
+    const accountIndex = user.acocunts.findIndex(
+      (account) => account.number_account === accountNunmer
+    );
+    const account = user.acocunts[accountIndex];
+    if (account !== undefined) {
+      const udtadeAccount = { ...account, credit: number };
+      user.acocunts[accountIndex] = udtadeAccount;
+      users[userIndex] = user;
+      fs.writeFileSync("users.json", JSON.stringify(users));
+      return "updated";
+    } else {
+      return "accounrt number not exist";
+    }
+  }
+
+  return "user id not exist";
+};
