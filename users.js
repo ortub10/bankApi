@@ -24,11 +24,10 @@ export const getUser = (id) => {
 
 export const addUser = (newUser) => {
   const users = getUsers();
-  if (newUser.userId === undefined) return "User id missing";
   const user = findUser(newUser.userId);
   if (user === undefined) {
     const newUserObj = {
-      userId: newUser.userId,
+      userId: +newUser.userId,
       acocunts: {
         number_account: `${newUser.userId}-1`,
         cash: newUser.cash,

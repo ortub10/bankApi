@@ -27,8 +27,9 @@ app.get("/users/:id", (req, res) => {
   res.send(getUser(id));
 });
 
-app.post("/users", (req, res) => {
-  let { userId, cash, credit } = req.query;
+app.post("/users/:userId", (req, res) => {
+  const { userId } = req.params;
+  let { cash, credit } = req.query;
   if (cash === undefined) cash = 0;
   if (credit === undefined) credit = 0;
   const add = addUser({ userId, cash, credit });
@@ -107,5 +108,5 @@ app.put(
 );
 
 app.listen(PORT, () => {
-  console.log(`listen to pore ${PORT}`);
+  console.log(`listen to port ${PORT}`);
 });
